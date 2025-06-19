@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Machine, Order, ProductionStats } from '../types';
+import { Machine, Order, ProductionStats, ClothingType } from '../types';
 import { machines as initialMachines, orders as initialOrders } from '../data/mockData';
 
 export const useProductionManager = () => {
@@ -29,6 +29,30 @@ export const useProductionManager = () => {
       efficiency: Math.round(avgEfficiency)
     });
   }, [machines, orders]);
+
+  const addOrder = (orderData: {
+    orderNumber: string;
+    customerName: string;
+    clothingType: ClothingType;
+    quantity: number;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    dueDate: Date;
+  }) => {
+    const newOrder: Order = {
+      id: orderData.orderNumber,
+      customerName: orderData.customerName,
+      clothingType: orderData.clothingType,
+      quantity: orderData.quantity,
+      priority: orderData.priority,
+      orderDate: new Date(),
+      dueDate: orderData.dueDate,
+      status: 'pending',
+      estimatedDuration: orderData.clothingType.estimatedTime * orderData.quantity,
+      completedQuantity: 0
+    };
+
+    setOrders(prev => [...prev, newOrder]);
+  };
 
   const assignMachineToOrder = (machineId: string, orderId: string) => {
     setMachines(prev => prev.map(machine => 
@@ -100,6 +124,7 @@ export const useProductionManager = () => {
     machines,
     orders,
     stats,
+    addOrder,
     assignMachineToOrder,
     startProduction,
     getAvailableMachinesForOrder
