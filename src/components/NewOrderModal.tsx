@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Package, User, Calendar, AlertCircle } from 'lucide-react';
-import { ClothingType } from '../types';
+import { X, Package, User, Calendar, AlertCircle, Plus, Tag } from 'lucide-react';
+import { ClothingType, DescriptionTag } from '../types';
+import { descriptionTags as initialDescriptionTags } from '../data/mockData';
 
 interface NewOrderModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface NewOrderModalProps {
     quantity: number;
     priority: 'low' | 'medium' | 'high' | 'urgent';
     dueDate: Date;
+    descriptionTags: DescriptionTag[];
   }) => void;
   clothingTypes: ClothingType[];
 }
@@ -31,9 +33,90 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({
     dueDate: ''
   });
 
+  const [selectedTags, setSelectedTags] = useState<DescriptionTag[]>([]);
+  const [customTags, setCustomTags] = useState<DescriptionTag[]>([]);
+  const [newTagCode, setNewTagCode] = useState('');
+  const [newTagLabel, setNewTagLabel] = useState('');
+  const [showNewTagForm, setShowNewTagForm] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!isOpen) return null;
+
+  const allAvailableTags = [...initialDescriptionTags, ...customTags];
+
+  const getTagColor = (color?: string) => {
+    switch (color) {
+      case 'blue':
+        return 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200';
+      case 'red':
+        return 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200';
+      case 'green':
+        return 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200';
+      case 'purple':
+        return 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200';
+      case 'amber':
+        return 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200';
+      case 'gray':
+        return 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200';
+      case 'indigo':
+        return 'bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-200';
+      case 'pink':
+        return 'bg-pink-100 text-pink-800 border-pink-200 hover:bg-pink-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200';
+    }
+  };
+
+  const getSelectedTagColor = (color?: string) => {
+    switch (color) {
+      case 'blue':
+        return 'bg-blue-500 text-white border-blue-500';
+      case 'red':
+        return 'bg-red-500 text-white border-red-500';
+      case 'green':
+        return 'bg-green-500 text-white border-green-500';
+      case 'purple':
+        return 'bg-purple-500 text-white border-purple-500';
+      case 'amber':
+        return 'bg-amber-500 text-white border-amber-500';
+      case 'gray':
+        return 'bg-gray-500 text-white border-gray-500';
+      case 'indigo':
+        return 'bg-indigo-500 text-white border-indigo-500';
+      case 'pink':
+        return 'bg-pink-500 text-white border-pink-500';
+      default:
+        return 'bg-gray-500 text-white border-gray-500';
+    }
+  };
+
+  const toggleTag = (tag: DescriptionTag) => {
+    setSelectedTags(prev => {
+      const isSelected = prev.some(t => t.id === tag.id);
+      if (isSelected) {
+        return prev.filter(t => t.id !== tag.id);
+      } else {
+        return [...prev, tag];
+      }
+    });
+  };
+
+  const addCustomTag = () => {
+    if (!newTagCode.trim() || !newTagLabel.trim()) return;
+
+    const newTag: DescriptionTag = {
+      id: `custom-${Date.now()}`,
+      code: newTagCode.toUpperCase(),
+      label: newTagLabel,
+      color: 'indigo'
+    };
+
+    setCustomTags(prev => [...prev, newTag]);
+    setSelectedTags(prev => [...prev, newTag]);
+    setNewTagCode('');
+    setNewTagLabel('');
+    setShowNewTagForm(false);
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -86,7 +169,8 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({
       clothingType: selectedClothingType,
       quantity: formData.quantity,
       priority: formData.priority,
-      dueDate: new Date(formData.dueDate)
+      dueDate: new Date(formData.dueDate),
+      descriptionTags: selectedTags
     });
 
     // Reset form
@@ -98,6 +182,11 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({
       priority: 'medium',
       dueDate: ''
     });
+    setSelectedTags([]);
+    setCustomTags([]);
+    setNewTagCode('');
+    setNewTagLabel('');
+    setShowNewTagForm(false);
     setErrors({});
     onClose();
   };
@@ -223,6 +312,114 @@ const NewOrderModal: React.FC<NewOrderModalProps> = ({
                   {errors.clothingTypeId}
                 </div>
               )}
+            </div>
+
+            {/* Description de l'article */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                <Tag className="inline w-4 h-4 mr-2" />
+                Décrire l'article
+              </label>
+              <div className="space-y-4">
+                {/* Vignettes disponibles */}
+                <div className="flex flex-wrap gap-2">
+                  {allAvailableTags.map((tag) => {
+                    const isSelected = selectedTags.some(t => t.id === tag.id);
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => toggleTag(tag)}
+                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                          isSelected 
+                            ? getSelectedTagColor(tag.color)
+                            : getTagColor(tag.color)
+                        }`}
+                        title={tag.label}
+                      >
+                        {tag.code}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Vignettes sélectionnées */}
+                {selectedTags.length > 0 && (
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-2">Vignettes sélectionnées :</p>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedTags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {tag.code} - {tag.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bouton pour créer une nouvelle vignette */}
+                {!showNewTagForm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowNewTagForm(true)}
+                    className="flex items-center space-x-2 px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-colors duration-200"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="text-sm">Créer une nouvelle vignette</span>
+                  </button>
+                ) : (
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 className="text-sm font-medium text-blue-900 mb-3">Nouvelle vignette</h4>
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <label className="block text-xs text-blue-700 mb-1">Code (ex: GB)</label>
+                        <input
+                          type="text"
+                          value={newTagCode}
+                          onChange={(e) => setNewTagCode(e.target.value.toUpperCase())}
+                          className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="GB"
+                          maxLength={4}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-blue-700 mb-1">Description</label>
+                        <input
+                          type="text"
+                          value={newTagLabel}
+                          onChange={(e) => setNewTagLabel(e.target.value)}
+                          className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Grande Broderie"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        type="button"
+                        onClick={addCustomTag}
+                        disabled={!newTagCode.trim() || !newTagLabel.trim()}
+                        className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200"
+                      >
+                        Ajouter
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowNewTagForm(false);
+                          setNewTagCode('');
+                          setNewTagLabel('');
+                        }}
+                        className="px-3 py-1 border border-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-50 transition-colors duration-200"
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Quantité */}

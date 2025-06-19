@@ -6,7 +6,7 @@ import StatsCard from './components/StatsCard';
 import MachineSelectionModal from './components/MachineSelectionModal';
 import NewOrderModal from './components/NewOrderModal';
 import { useProductionManager } from './hooks/useProductionManager';
-import { Order } from './types';
+import { Order, DescriptionTag } from './types';
 import { clothingTypes } from './data/mockData';
 
 function App() {
@@ -48,6 +48,7 @@ function App() {
     quantity: number;
     priority: 'low' | 'medium' | 'high' | 'urgent';
     dueDate: Date;
+    descriptionTags: DescriptionTag[];
   }) => {
     addOrder(orderData);
   };

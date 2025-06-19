@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Machine, Order, ProductionStats, ClothingType } from '../types';
+import { Machine, Order, ProductionStats, ClothingType, DescriptionTag } from '../types';
 import { machines as initialMachines, orders as initialOrders } from '../data/mockData';
 
 export const useProductionManager = () => {
@@ -37,6 +37,7 @@ export const useProductionManager = () => {
     quantity: number;
     priority: 'low' | 'medium' | 'high' | 'urgent';
     dueDate: Date;
+    descriptionTags: DescriptionTag[];
   }) => {
     const newOrder: Order = {
       id: orderData.orderNumber,
@@ -48,7 +49,8 @@ export const useProductionManager = () => {
       dueDate: orderData.dueDate,
       status: 'pending',
       estimatedDuration: orderData.clothingType.estimatedTime * orderData.quantity,
-      completedQuantity: 0
+      completedQuantity: 0,
+      descriptionTags: orderData.descriptionTags
     };
 
     setOrders(prev => [...prev, newOrder]);

@@ -22,6 +22,7 @@ export interface Order {
   assignedMachine?: string;
   estimatedDuration: number;
   completedQuantity: number;
+  descriptionTags?: DescriptionTag[];
 }
 
 export interface ClothingType {
@@ -31,6 +32,13 @@ export interface ClothingType {
   complexity: number;
   estimatedTime: number; // in minutes per unit
   requiredMachines: string[];
+}
+
+export interface DescriptionTag {
+  id: string;
+  code: string;
+  label: string;
+  color?: string;
 }
 
 export interface ProductionStats {

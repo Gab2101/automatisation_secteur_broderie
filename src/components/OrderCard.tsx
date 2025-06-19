@@ -1,6 +1,6 @@
 import React from 'react';
 import { Order } from '../types';
-import { User, Calendar, Clock, Package, AlertTriangle } from 'lucide-react';
+import { User, Calendar, Clock, Package, AlertTriangle, Tag } from 'lucide-react';
 
 interface OrderCardProps {
   order: Order;
@@ -39,6 +39,29 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
     }
   };
 
+  const getTagColor = (color?: string) => {
+    switch (color) {
+      case 'blue':
+        return 'bg-blue-100 text-blue-800';
+      case 'red':
+        return 'bg-red-100 text-red-800';
+      case 'green':
+        return 'bg-green-100 text-green-800';
+      case 'purple':
+        return 'bg-purple-100 text-purple-800';
+      case 'amber':
+        return 'bg-amber-100 text-amber-800';
+      case 'gray':
+        return 'bg-gray-100 text-gray-800';
+      case 'indigo':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'pink':
+        return 'bg-pink-100 text-pink-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const calculateProgress = () => {
     return (order.completedQuantity / order.quantity) * 100;
   };
@@ -62,10 +85,16 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
         </div>
         <div className="flex flex-col space-y-2">
           <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
-            {order.priority.toUpperCase()}
+            {order.priority === 'low' && 'FAIBLE'}
+            {order.priority === 'medium' && 'MOYENNE'}
+            {order.priority === 'high' && 'ÉLEVÉE'}
+            {order.priority === 'urgent' && 'URGENTE'}
           </div>
           <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-            {order.status.replace('-', ' ').toUpperCase()}
+            {order.status === 'pending' && 'EN ATTENTE'}
+            {order.status === 'in-production' && 'EN PRODUCTION'}
+            {order.status === 'completed' && 'TERMINÉE'}
+            {order.status === 'cancelled' && 'ANNULÉE'}
           </div>
         </div>
       </div>
@@ -74,22 +103,22 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Package className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Product</span>
+            <span className="text-sm text-gray-600">Produit</span>
           </div>
           <span className="text-sm font-medium text-gray-900">{order.clothingType.name}</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Quantity</span>
+            <span className="text-sm text-gray-600">Quantité</span>
           </div>
-          <span className="text-sm font-medium text-gray-900">{order.quantity} units</span>
+          <span className="text-sm font-medium text-gray-900">{order.quantity} unités</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Due Date</span>
+            <span className="text-sm text-gray-600">Date de livraison</span>
           </div>
           <span className={`text-sm font-medium ${isOverdue() ? 'text-red-600' : 'text-gray-900'}`}>
             {order.dueDate.toLocaleDateString()}
@@ -99,7 +128,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Clock className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Estimated Time</span>
+            <span className="text-sm text-gray-600">Temps estimé</span>
           </div>
           <span className="text-sm font-medium text-gray-900">
             {Math.round(order.estimatedDuration / 60)}h {order.estimatedDuration % 60}m
@@ -107,10 +136,31 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
         </div>
       </div>
 
+      {/* Description Tags */}
+      {order.descriptionTags && order.descriptionTags.length > 0 && (
+        <div className="mb-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <Tag className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600">Description</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {order.descriptionTags.map((tag) => (
+              <span
+                key={tag.id}
+                className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${getTagColor(tag.color)}`}
+                title={tag.label}
+              >
+                {tag.code}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {order.status === 'in-production' && (
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Progress</span>
+            <span className="text-sm text-gray-600">Progression</span>
             <span className="text-sm font-medium text-gray-900">
               {order.completedQuantity}/{order.quantity} ({Math.round(calculateProgress())}%)
             </span>
@@ -130,7 +180,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
             onClick={() => onAssignMachine?.(order.id)}
             className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
           >
-            Assign Machine
+            Assigner Machine
           </button>
         )}
         {order.status === 'pending' && order.assignedMachine && (
@@ -138,7 +188,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
             onClick={() => onStartProduction?.(order.id)}
             className="flex-1 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors duration-200"
           >
-            Start Production
+            Démarrer Production
           </button>
         )}
       </div>
@@ -146,7 +196,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
       {order.assignedMachine && (
         <div className="mt-3 pt-3 border-t border-gray-100">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">Assigned Machine</span>
+            <span className="text-xs text-gray-500">Machine assignée</span>
             <span className="text-xs font-medium text-gray-900">{order.assignedMachine}</span>
           </div>
         </div>

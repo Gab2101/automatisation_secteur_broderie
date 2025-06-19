@@ -1,9 +1,9 @@
-import { Machine, Order, ClothingType } from '../types';
+import { Machine, Order, ClothingType, DescriptionTag } from '../types';
 
 export const clothingTypes: ClothingType[] = [
   {
     id: 'shirt-casual',
-    name: 'Casual Shirt',
+    name: 'Chemise Décontractée',
     category: 'shirt',
     complexity: 3,
     estimatedTime: 45,
@@ -11,7 +11,7 @@ export const clothingTypes: ClothingType[] = [
   },
   {
     id: 'shirt-formal',
-    name: 'Formal Shirt',
+    name: 'Chemise Formelle',
     category: 'shirt',
     complexity: 4,
     estimatedTime: 60,
@@ -19,7 +19,7 @@ export const clothingTypes: ClothingType[] = [
   },
   {
     id: 'jeans',
-    name: 'Jeans',
+    name: 'Jean',
     category: 'pants',
     complexity: 5,
     estimatedTime: 90,
@@ -27,7 +27,7 @@ export const clothingTypes: ClothingType[] = [
   },
   {
     id: 'dress-summer',
-    name: 'Summer Dress',
+    name: 'Robe d\'Été',
     category: 'dress',
     complexity: 4,
     estimatedTime: 75,
@@ -40,6 +40,57 @@ export const clothingTypes: ClothingType[] = [
     complexity: 6,
     estimatedTime: 120,
     requiredMachines: ['sewing-advanced', 'pressing', 'buttonhole']
+  }
+];
+
+export const descriptionTags: DescriptionTag[] = [
+  {
+    id: 'gb',
+    code: 'GB',
+    label: 'Grande Broderie',
+    color: 'blue'
+  },
+  {
+    id: 'bc',
+    code: 'BC',
+    label: 'Broderie Cœur',
+    color: 'red'
+  },
+  {
+    id: 'pb',
+    code: 'PB',
+    label: 'Petite Broderie',
+    color: 'green'
+  },
+  {
+    id: 'bl',
+    code: 'BL',
+    label: 'Broderie Logo',
+    color: 'purple'
+  },
+  {
+    id: 'bp',
+    code: 'BP',
+    label: 'Broderie Personnalisée',
+    color: 'amber'
+  },
+  {
+    id: 'rf',
+    code: 'RF',
+    label: 'Renfort',
+    color: 'gray'
+  },
+  {
+    id: 'cp',
+    code: 'CP',
+    label: 'Coupe Personnalisée',
+    color: 'indigo'
+  },
+  {
+    id: 'fb',
+    code: 'FB',
+    label: 'Finition Brodée',
+    color: 'pink'
   }
 ];
 
@@ -110,8 +161,8 @@ export const machines: Machine[] = [
 export const orders: Order[] = [
   {
     id: 'order-001',
-    customerName: 'Fashion Boutique Ltd',
-    clothingType: clothingTypes[1], // Formal Shirt
+    customerName: 'Boutique Mode Ltd',
+    clothingType: clothingTypes[1], // Chemise Formelle
     quantity: 50,
     priority: 'high',
     orderDate: new Date('2024-01-15'),
@@ -119,35 +170,38 @@ export const orders: Order[] = [
     status: 'in-production',
     assignedMachine: 'machine-002',
     estimatedDuration: 3000, // 50 * 60 minutes
-    completedQuantity: 25
+    completedQuantity: 25,
+    descriptionTags: [descriptionTags[0], descriptionTags[3]] // GB, BL
   },
   {
     id: 'order-002',
     customerName: 'Urban Wear Co',
-    clothingType: clothingTypes[2], // Jeans
+    clothingType: clothingTypes[2], // Jean
     quantity: 30,
     priority: 'medium',
     orderDate: new Date('2024-01-16'),
     dueDate: new Date('2024-01-30'),
     status: 'pending',
     estimatedDuration: 2700, // 30 * 90 minutes
-    completedQuantity: 0
+    completedQuantity: 0,
+    descriptionTags: [descriptionTags[5]] // RF
   },
   {
     id: 'order-003',
-    customerName: 'Summer Collection',
-    clothingType: clothingTypes[3], // Summer Dress
+    customerName: 'Collection Été',
+    clothingType: clothingTypes[3], // Robe d'Été
     quantity: 25,
     priority: 'urgent',
     orderDate: new Date('2024-01-17'),
     dueDate: new Date('2024-01-22'),
     status: 'pending',
     estimatedDuration: 1875, // 25 * 75 minutes
-    completedQuantity: 0
+    completedQuantity: 0,
+    descriptionTags: [descriptionTags[1], descriptionTags[2]] // BC, PB
   },
   {
     id: 'order-004',
-    customerName: 'Corporate Styles',
+    customerName: 'Styles Corporate',
     clothingType: clothingTypes[4], // Blazer
     quantity: 15,
     priority: 'high',
@@ -155,18 +209,20 @@ export const orders: Order[] = [
     dueDate: new Date('2024-01-28'),
     status: 'pending',
     estimatedDuration: 1800, // 15 * 120 minutes
-    completedQuantity: 0
+    completedQuantity: 0,
+    descriptionTags: [descriptionTags[4], descriptionTags[7]] // BP, FB
   },
   {
     id: 'order-005',
-    customerName: 'Casual Trends',
-    clothingType: clothingTypes[0], // Casual Shirt
+    customerName: 'Tendances Casual',
+    clothingType: clothingTypes[0], // Chemise Décontractée
     quantity: 40,
     priority: 'low',
     orderDate: new Date('2024-01-19'),
     dueDate: new Date('2024-02-05'),
     status: 'pending',
     estimatedDuration: 1800, // 40 * 45 minutes
-    completedQuantity: 0
+    completedQuantity: 0,
+    descriptionTags: [descriptionTags[6]] // CP
   }
 ];
