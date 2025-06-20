@@ -4,10 +4,12 @@ import MachineCard from './components/MachineCard';
 import OrderCard from './components/OrderCard';
 import StatsCard from './components/StatsCard';
 import MachineSelectionModal from './components/MachineSelectionModal';
+import MachineConfigurationModal from './components/MachineConfigurationModal';
 import NewOrderModal from './components/NewOrderModal';
 import { useProductionManager } from './hooks/useProductionManager';
-import { Order, DescriptionTag } from './types';
+import { Order, Machine, DescriptionTag } from './types';
 import { clothingTypes } from './data/mockData';
+import { descriptionTags as initialDescriptionTags } from './data/mockData';
 
 function App() {
   const {
@@ -15,6 +17,7 @@ function App() {
     orders,
     stats,
     addOrder,
+    updateMachine,
     assignMachineToOrder,
     startProduction,
     getAvailableMachinesForOrder
@@ -22,8 +25,13 @@ function App() {
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'machines' | 'orders'>('dashboard');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [showMachineModal, setShowMachineModal] = useState(false);
+  const [showMachineConfigModal, setShowMachineConfigModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
+  const [customTags, setCustomTags] = useState<DescriptionTag[]>([]);
+
+  const allDescriptionTags = [...initialDescriptionTags, ...customTags];
 
   const handleAssignMachine = (orderId: string) => {
     const order = orders.find(o => o.id === orderId);
@@ -33,8 +41,17 @@ function App() {
     }
   };
 
+  const handleMachineConfiguration = (machine: Machine) => {
+    setSelectedMachine(machine);
+    setShowMachineConfigModal(true);
+  };
+
   const handleMachineSelection = (machineId: string, orderId: string) => {
     assignMachineToOrder(machineId, orderId);
+  };
+
+  const handleMachineUpdate = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
+    updateMachine(machineId, name, descriptionTags);
   };
 
   const handleStartProduction = (orderId: string) => {
@@ -200,7 +217,11 @@ function App() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {machines.map((machine) => (
-                <MachineCard key={machine.id} machine={machine} />
+                <MachineCard 
+                  key={machine.id} 
+                  machine={machine} 
+                  onClick={() => handleMachineConfiguration(machine)}
+                />
               ))}
             </div>
           </div>
@@ -240,6 +261,15 @@ function App() {
         order={selectedOrder}
         machines={machines}
         onSelectMachine={handleMachineSelection}
+      />
+
+      {/* Machine Configuration Modal */}
+      <MachineConfigurationModal
+        isOpen={showMachineConfigModal}
+        onClose={() => setShowMachineConfigModal(false)}
+        machine={selectedMachine}
+        allDescriptionTags={allDescriptionTags}
+        onSave={handleMachineUpdate}
       />
 
       {/* New Order Modal */}

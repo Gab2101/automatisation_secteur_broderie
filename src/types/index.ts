@@ -8,6 +8,7 @@ export interface Machine {
   efficiency: number;
   maintenanceDate: Date;
   location: string;
+  descriptionTags?: DescriptionTag[];
 }
 
 export interface Order {

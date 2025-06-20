@@ -103,7 +103,8 @@ export const machines: Machine[] = [
     capabilities: clothingTypes.filter(c => c.requiredMachines.includes('sewing-basic')),
     efficiency: 92,
     maintenanceDate: new Date('2024-02-15'),
-    location: 'Zone A'
+    location: 'Zone A',
+    descriptionTags: [descriptionTags[0], descriptionTags[2]] // Grande Broderie, Petite Broderie
   },
   {
     id: 'machine-002',
@@ -114,7 +115,8 @@ export const machines: Machine[] = [
     currentOrder: 'order-001',
     efficiency: 88,
     maintenanceDate: new Date('2024-01-20'),
-    location: 'Zone A'
+    location: 'Zone A',
+    descriptionTags: [descriptionTags[3], descriptionTags[4]] // Broderie Logo, Broderie Personnalisée
   },
   {
     id: 'machine-003',
@@ -124,7 +126,8 @@ export const machines: Machine[] = [
     capabilities: clothingTypes.filter(c => c.requiredMachines.includes('sewing-heavy')),
     efficiency: 85,
     maintenanceDate: new Date('2024-03-01'),
-    location: 'Zone B'
+    location: 'Zone B',
+    descriptionTags: [descriptionTags[5]] // Renfort
   },
   {
     id: 'machine-004',
@@ -134,7 +137,8 @@ export const machines: Machine[] = [
     capabilities: clothingTypes.filter(c => c.requiredMachines.includes('pressing')),
     efficiency: 95,
     maintenanceDate: new Date('2024-01-25'),
-    location: 'Zone C'
+    location: 'Zone C',
+    descriptionTags: [descriptionTags[7]] // Finition Brodée
   },
   {
     id: 'machine-005',
@@ -144,7 +148,8 @@ export const machines: Machine[] = [
     capabilities: clothingTypes.filter(c => c.requiredMachines.includes('overlocking')),
     efficiency: 90,
     maintenanceDate: new Date('2024-02-10'),
-    location: 'Zone A'
+    location: 'Zone A',
+    descriptionTags: [descriptionTags[6]] // Coupe Personnalisée
   },
   {
     id: 'machine-006',
@@ -154,7 +159,8 @@ export const machines: Machine[] = [
     capabilities: clothingTypes.filter(c => c.requiredMachines.includes('riveting')),
     efficiency: 87,
     maintenanceDate: new Date('2024-01-30'),
-    location: 'Zone B'
+    location: 'Zone B',
+    descriptionTags: [descriptionTags[5], descriptionTags[1]] // Renfort, Broderie Cœur
   }
 ];
 

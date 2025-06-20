@@ -56,6 +56,14 @@ export const useProductionManager = () => {
     setOrders(prev => [...prev, newOrder]);
   };
 
+  const updateMachine = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
+    setMachines(prev => prev.map(machine => 
+      machine.id === machineId 
+        ? { ...machine, name, descriptionTags }
+        : machine
+    ));
+  };
+
   const assignMachineToOrder = (machineId: string, orderId: string) => {
     setMachines(prev => prev.map(machine => 
       machine.id === machineId 
@@ -127,6 +135,7 @@ export const useProductionManager = () => {
     orders,
     stats,
     addOrder,
+    updateMachine,
     assignMachineToOrder,
     startProduction,
     getAvailableMachinesForOrder
