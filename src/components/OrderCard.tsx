@@ -40,26 +40,31 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
   };
 
   const getTagColor = (color?: string) => {
-    switch (color) {
-      case 'blue':
-        return 'bg-blue-100 text-blue-800';
-      case 'red':
-        return 'bg-red-100 text-red-800';
-      case 'green':
-        return 'bg-green-100 text-green-800';
-      case 'purple':
-        return 'bg-purple-100 text-purple-800';
-      case 'amber':
-        return 'bg-amber-100 text-amber-800';
-      case 'gray':
-        return 'bg-gray-100 text-gray-800';
-      case 'indigo':
-        return 'bg-indigo-100 text-indigo-800';
-      case 'pink':
-        return 'bg-pink-100 text-pink-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+    const colorMap: Record<string, string> = {
+      blue: 'bg-blue-100 text-blue-800',
+      red: 'bg-red-100 text-red-800',
+      green: 'bg-green-100 text-green-800',
+      purple: 'bg-purple-100 text-purple-800',
+      amber: 'bg-amber-100 text-amber-800',
+      gray: 'bg-gray-100 text-gray-800',
+      indigo: 'bg-indigo-100 text-indigo-800',
+      pink: 'bg-pink-100 text-pink-800',
+      emerald: 'bg-emerald-100 text-emerald-800',
+      teal: 'bg-teal-100 text-teal-800',
+      orange: 'bg-orange-100 text-orange-800',
+      violet: 'bg-violet-100 text-violet-800',
+      rose: 'bg-rose-100 text-rose-800',
+      cyan: 'bg-cyan-100 text-cyan-800',
+      lime: 'bg-lime-100 text-lime-800',
+      yellow: 'bg-yellow-100 text-yellow-800',
+      sky: 'bg-sky-100 text-sky-800',
+      fuchsia: 'bg-fuchsia-100 text-fuchsia-800',
+      slate: 'bg-slate-100 text-slate-800',
+      zinc: 'bg-zinc-100 text-zinc-800',
+      neutral: 'bg-neutral-100 text-neutral-800',
+      stone: 'bg-stone-100 text-stone-800'
+    };
+    return colorMap[color || 'gray'] || 'bg-gray-100 text-gray-800';
   };
 
   const calculateProgress = () => {
@@ -148,9 +153,9 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onAssignMachine, onStartPr
               <span
                 key={tag.id}
                 className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${getTagColor(tag.color)}`}
-                title={tag.label}
+                title={`${tag.label} (${tag.code})`}
               >
-                {tag.code}
+                {tag.label}
               </span>
             ))}
           </div>
