@@ -42,6 +42,13 @@ export interface DescriptionTag {
   color?: string;
 }
 
+export interface Operator {
+  id: string;
+  name: string;
+  language: string;
+  strengths: DescriptionTag[];
+}
+
 export interface ProductionStats {
   totalOrders: number;
   completedOrders: number;

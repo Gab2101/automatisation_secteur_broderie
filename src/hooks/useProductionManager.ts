@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Machine, Order, ProductionStats, ClothingType, DescriptionTag } from '../types';
+import { Machine, Order, ProductionStats, ClothingType, DescriptionTag, Operator } from '../types';
 import { machines as initialMachines, orders as initialOrders } from '../data/mockData';
 
 export const useProductionManager = () => {
   const [machines, setMachines] = useState<Machine[]>(initialMachines);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [operators, setOperators] = useState<Operator[]>([]);
   const [stats, setStats] = useState<ProductionStats>({
     totalOrders: 0,
     completedOrders: 0,
@@ -54,6 +55,21 @@ export const useProductionManager = () => {
     };
 
     setOrders(prev => [...prev, newOrder]);
+  };
+
+  const addOperator = (operatorData: {
+    name: string;
+    language: string;
+    strengths: DescriptionTag[];
+  }) => {
+    const newOperator: Operator = {
+      id: `operator-${Date.now()}`,
+      name: operatorData.name,
+      language: operatorData.language,
+      strengths: operatorData.strengths
+    };
+
+    setOperators(prev => [...prev, newOperator]);
   };
 
   const updateMachine = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
@@ -133,8 +149,10 @@ export const useProductionManager = () => {
   return {
     machines,
     orders,
+    operators,
     stats,
     addOrder,
+    addOperator,
     updateMachine,
     assignMachineToOrder,
     startProduction,
