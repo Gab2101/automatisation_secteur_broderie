@@ -1,13 +1,14 @@
 import React from 'react';
 import { Operator } from '../types';
-import { User, Globe, Tag, Star } from 'lucide-react';
+import { User, Globe, Tag, Star, Settings } from 'lucide-react';
 
 interface OperatorCardProps {
   operator: Operator;
   onClick?: () => void;
+  onEdit?: () => void;
 }
 
-const OperatorCard: React.FC<OperatorCardProps> = ({ operator, onClick }) => {
+const OperatorCard: React.FC<OperatorCardProps> = ({ operator, onClick, onEdit }) => {
   const getTagColor = (color?: string) => {
     const colorMap: Record<string, string> = {
       blue: 'bg-blue-100 text-blue-800',
@@ -54,6 +55,11 @@ const OperatorCard: React.FC<OperatorCardProps> = ({ operator, onClick }) => {
     return languages[code] || code;
   };
 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit?.();
+  };
+
   return (
     <div
       className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1"
@@ -72,9 +78,18 @@ const OperatorCard: React.FC<OperatorCardProps> = ({ operator, onClick }) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-1 text-amber-500">
-          <Star className="w-4 h-4 fill-current" />
-          <span className="text-sm font-medium text-gray-700">Expert</span>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 text-amber-500">
+            <Star className="w-4 h-4 fill-current" />
+            <span className="text-sm font-medium text-gray-700">Expert</span>
+          </div>
+          <button
+            onClick={handleEditClick}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            title="Modifier l'opérateur"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

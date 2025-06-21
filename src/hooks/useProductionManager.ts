@@ -72,6 +72,18 @@ export const useProductionManager = () => {
     setOperators(prev => [...prev, newOperator]);
   };
 
+  const updateOperator = (operatorId: string, operatorData: {
+    name: string;
+    language: string;
+    strengths: DescriptionTag[];
+  }) => {
+    setOperators(prev => prev.map(operator => 
+      operator.id === operatorId 
+        ? { ...operator, name: operatorData.name, language: operatorData.language, strengths: operatorData.strengths }
+        : operator
+    ));
+  };
+
   const updateMachine = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
     setMachines(prev => prev.map(machine => 
       machine.id === machineId 
@@ -153,6 +165,7 @@ export const useProductionManager = () => {
     stats,
     addOrder,
     addOperator,
+    updateOperator,
     updateMachine,
     assignMachineToOrder,
     startProduction,

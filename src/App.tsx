@@ -8,8 +8,9 @@ import MachineSelectionModal from './components/MachineSelectionModal';
 import MachineConfigurationModal from './components/MachineConfigurationModal';
 import NewOrderModal from './components/NewOrderModal';
 import NewOperatorModal from './components/NewOperatorModal';
+import EditOperatorModal from './components/EditOperatorModal';
 import { useProductionManager } from './hooks/useProductionManager';
-import { Order, Machine, DescriptionTag } from './types';
+import { Order, Machine, Operator, DescriptionTag } from './types';
 import { clothingTypes } from './data/mockData';
 import { descriptionTags as initialDescriptionTags } from './data/mockData';
 
@@ -21,6 +22,7 @@ function App() {
     stats,
     addOrder,
     addOperator,
+    updateOperator,
     updateMachine,
     assignMachineToOrder,
     startProduction,
@@ -30,10 +32,12 @@ function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'machines' | 'orders' | 'operators'>('dashboard');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
+  const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
   const [showMachineModal, setShowMachineModal] = useState(false);
   const [showMachineConfigModal, setShowMachineConfigModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [showNewOperatorModal, setShowNewOperatorModal] = useState(false);
+  const [showEditOperatorModal, setShowEditOperatorModal] = useState(false);
   const [customTags, setCustomTags] = useState<DescriptionTag[]>([]);
 
   const allDescriptionTags = [...initialDescriptionTags, ...customTags];
@@ -51,12 +55,25 @@ function App() {
     setShowMachineConfigModal(true);
   };
 
+  const handleOperatorEdit = (operator: Operator) => {
+    setSelectedOperator(operator);
+    setShowEditOperatorModal(true);
+  };
+
   const handleMachineSelection = (machineId: string, orderId: string) => {
     assignMachineToOrder(machineId, orderId);
   };
 
   const handleMachineUpdate = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
     updateMachine(machineId, name, descriptionTags);
+  };
+
+  const handleOperatorUpdate = (operatorId: string, operatorData: {
+    name: string;
+    language: string;
+    strengths: DescriptionTag[];
+  }) => {
+    updateOperator(operatorId, operatorData);
   };
 
   const handleStartProduction = (orderId: string) => {
@@ -298,7 +315,11 @@ function App() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {operators.map((operator) => (
-                  <OperatorCard key={operator.id} operator={operator} />
+                  <OperatorCard 
+                    key={operator.id} 
+                    operator={operator} 
+                    onEdit={() => handleOperatorEdit(operator)}
+                  />
                 ))}
               </div>
             )}
@@ -337,6 +358,15 @@ function App() {
         isOpen={showNewOperatorModal}
         onClose={() => setShowNewOperatorModal(false)}
         onAddOperator={handleAddOperator}
+        allDescriptionTags={allDescriptionTags}
+      />
+
+      {/* Edit Operator Modal */}
+      <EditOperatorModal
+        isOpen={showEditOperatorModal}
+        onClose={() => setShowEditOperatorModal(false)}
+        operator={selectedOperator}
+        onUpdateOperator={handleOperatorUpdate}
         allDescriptionTags={allDescriptionTags}
       />
     </div>
