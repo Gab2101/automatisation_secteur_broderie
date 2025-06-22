@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Machine, Order, ProductionStats, ClothingType, DescriptionTag, Operator } from '../types';
-import { machines as initialMachines, orders as initialOrders } from '../data/mockData';
+import { Machine, Order, ProductionStats, ClothingType, DescriptionTag, Operator, ProductionTimeCategory, ErrorTimeCategory } from '../types';
+import { machines as initialMachines, orders as initialOrders, productionTimeCategories as initialProductionTimes, errorTimeCategories as initialErrorTimes } from '../data/mockData';
 
 export const useProductionManager = () => {
   const [machines, setMachines] = useState<Machine[]>(initialMachines);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [operators, setOperators] = useState<Operator[]>([]);
+  const [productionTimeCategories, setProductionTimeCategories] = useState<ProductionTimeCategory[]>(initialProductionTimes);
+  const [errorTimeCategories, setErrorTimeCategories] = useState<ErrorTimeCategory[]>(initialErrorTimes);
   const [stats, setStats] = useState<ProductionStats>({
     totalOrders: 0,
     completedOrders: 0,
@@ -92,6 +94,82 @@ export const useProductionManager = () => {
     ));
   };
 
+  // Production Time Management
+  const addProductionTime = (timeData: {
+    name: string;
+    value: string | number;
+    type: 'fixed' | 'formula';
+    unit?: string;
+    description?: string;
+  }) => {
+    const newTime: ProductionTimeCategory = {
+      id: `production-time-${Date.now()}`,
+      name: timeData.name,
+      value: timeData.value,
+      type: timeData.type,
+      unit: timeData.unit,
+      description: timeData.description
+    };
+
+    setProductionTimeCategories(prev => [...prev, newTime]);
+  };
+
+  const updateProductionTime = (timeId: string, timeData: {
+    name: string;
+    value: string | number;
+    type: 'fixed' | 'formula';
+    unit?: string;
+    description?: string;
+  }) => {
+    setProductionTimeCategories(prev => prev.map(time => 
+      time.id === timeId 
+        ? { ...time, ...timeData }
+        : time
+    ));
+  };
+
+  const deleteProductionTime = (timeId: string) => {
+    setProductionTimeCategories(prev => prev.filter(time => time.id !== timeId));
+  };
+
+  // Error Time Management
+  const addErrorTime = (errorData: {
+    name: string;
+    value: number;
+    unit: string;
+    description?: string;
+    frequency?: string;
+  }) => {
+    const newError: ErrorTimeCategory = {
+      id: `error-time-${Date.now()}`,
+      name: errorData.name,
+      value: errorData.value,
+      unit: errorData.unit,
+      description: errorData.description,
+      frequency: errorData.frequency
+    };
+
+    setErrorTimeCategories(prev => [...prev, newError]);
+  };
+
+  const updateErrorTime = (errorId: string, errorData: {
+    name: string;
+    value: number;
+    unit: string;
+    description?: string;
+    frequency?: string;
+  }) => {
+    setErrorTimeCategories(prev => prev.map(error => 
+      error.id === errorId 
+        ? { ...error, ...errorData }
+        : error
+    ));
+  };
+
+  const deleteErrorTime = (errorId: string) => {
+    setErrorTimeCategories(prev => prev.filter(error => error.id !== errorId));
+  };
+
   const assignMachineToOrder = (machineId: string, orderId: string) => {
     setMachines(prev => prev.map(machine => 
       machine.id === machineId 
@@ -162,11 +240,19 @@ export const useProductionManager = () => {
     machines,
     orders,
     operators,
+    productionTimeCategories,
+    errorTimeCategories,
     stats,
     addOrder,
     addOperator,
     updateOperator,
     updateMachine,
+    addProductionTime,
+    updateProductionTime,
+    deleteProductionTime,
+    addErrorTime,
+    updateErrorTime,
+    deleteErrorTime,
     assignMachineToOrder,
     startProduction,
     getAvailableMachinesForOrder

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Factory, Package, BarChart3, Settings, Plus, Users } from 'lucide-react';
+import { Factory, Package, BarChart3, Settings, Plus, Users, Clock } from 'lucide-react';
 import MachineCard from './components/MachineCard';
 import OrderCard from './components/OrderCard';
 import StatsCard from './components/StatsCard';
@@ -9,6 +9,7 @@ import MachineConfigurationModal from './components/MachineConfigurationModal';
 import NewOrderModal from './components/NewOrderModal';
 import NewOperatorModal from './components/NewOperatorModal';
 import EditOperatorModal from './components/EditOperatorModal';
+import TimeManagementDashboard from './components/TimeManagementDashboard';
 import { useProductionManager } from './hooks/useProductionManager';
 import { Order, Machine, Operator, DescriptionTag } from './types';
 import { clothingTypes } from './data/mockData';
@@ -19,17 +20,25 @@ function App() {
     machines,
     orders,
     operators,
+    productionTimeCategories,
+    errorTimeCategories,
     stats,
     addOrder,
     addOperator,
     updateOperator,
     updateMachine,
+    addProductionTime,
+    updateProductionTime,
+    deleteProductionTime,
+    addErrorTime,
+    updateErrorTime,
+    deleteErrorTime,
     assignMachineToOrder,
     startProduction,
     getAvailableMachinesForOrder
   } = useProductionManager();
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'machines' | 'orders' | 'operators'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'machines' | 'orders' | 'operators' | 'time-management'>('dashboard');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
@@ -136,7 +145,8 @@ function App() {
               { id: 'dashboard', name: 'Tableau de Bord', icon: BarChart3 },
               { id: 'machines', name: 'Machines', icon: Factory },
               { id: 'orders', name: 'Commandes', icon: Package },
-              { id: 'operators', name: 'Opérateurs', icon: Users }
+              { id: 'operators', name: 'Opérateurs', icon: Users },
+              { id: 'time-management', name: 'Gestion des Temps', icon: Clock }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -324,6 +334,19 @@ function App() {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'time-management' && (
+          <TimeManagementDashboard
+            productionTimeCategories={productionTimeCategories}
+            errorTimeCategories={errorTimeCategories}
+            onAddProductionTime={addProductionTime}
+            onUpdateProductionTime={updateProductionTime}
+            onDeleteProductionTime={deleteProductionTime}
+            onAddErrorTime={addErrorTime}
+            onUpdateErrorTime={updateErrorTime}
+            onDeleteErrorTime={deleteErrorTime}
+          />
         )}
       </main>
 

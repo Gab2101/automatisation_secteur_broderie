@@ -1,4 +1,4 @@
-import { Machine, Order, ClothingType, DescriptionTag } from '../types';
+import { Machine, Order, ClothingType, DescriptionTag, ProductionTimeCategory, ErrorTimeCategory } from '../types';
 
 export const clothingTypes: ClothingType[] = [
   {
@@ -91,6 +91,92 @@ export const descriptionTags: DescriptionTag[] = [
     code: 'FB',
     label: 'Finition Brodée',
     color: 'pink'
+  }
+];
+
+export const productionTimeCategories: ProductionTimeCategory[] = [
+  {
+    id: 'framing',
+    name: 'Cadrage de l\'article',
+    value: 5,
+    type: 'fixed',
+    unit: 'minutes',
+    description: 'Temps nécessaire pour positionner et cadrer l\'article avant broderie'
+  },
+  {
+    id: 'embroidery-time',
+    name: 'Temps de la broderie',
+    value: 'points * 0.8 / 1000',
+    type: 'formula',
+    unit: 'minutes',
+    description: 'Temps calculé en fonction du nombre de points de broderie'
+  },
+  {
+    id: 'thread-change',
+    name: 'Changement de fil',
+    value: 2,
+    type: 'fixed',
+    unit: 'minutes',
+    description: 'Temps pour changer de couleur de fil'
+  },
+  {
+    id: 'quality-check',
+    name: 'Contrôle qualité',
+    value: 3,
+    type: 'fixed',
+    unit: 'minutes',
+    description: 'Vérification de la qualité de la broderie'
+  },
+  {
+    id: 'setup-time',
+    name: 'Temps de préparation machine',
+    value: 'complexity * 2',
+    type: 'formula',
+    unit: 'minutes',
+    description: 'Temps de préparation basé sur la complexité de l\'article'
+  }
+];
+
+export const errorTimeCategories: ErrorTimeCategory[] = [
+  {
+    id: 'thread-break',
+    name: 'Casse de fil',
+    value: 3,
+    unit: 'minutes',
+    description: 'Temps perdu lors d\'une casse de fil',
+    frequency: 'Occasionnel'
+  },
+  {
+    id: 'needle-break',
+    name: 'Casse d\'aiguille',
+    value: 5,
+    unit: 'minutes',
+    description: 'Temps pour remplacer une aiguille cassée',
+    frequency: 'Rare'
+  },
+  {
+    id: 'fabric-jam',
+    name: 'Bourrage tissu',
+    value: 8,
+    unit: 'minutes',
+    description: 'Temps pour résoudre un bourrage de tissu',
+    frequency: 'Rare'
+  },
+  {
+    id: 'machine-calibration',
+    name: 'Recalibrage machine',
+    value: 15,
+    unit: 'minutes',
+    description: 'Temps pour recalibrer la machine en cas de décalage',
+    frequency: 'Très rare'
+  },
+  {
+    id: 'design-error',
+    name: 'Erreur de motif',
+    value: 10,
+    unit: 'minutes',
+    description: 'Temps pour corriger une erreur dans le motif de broderie',
+    frequency: 'Occasionnel'
   }
 ];
 

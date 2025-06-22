@@ -56,3 +56,21 @@ export interface ProductionStats {
   availableMachines: number;
   efficiency: number;
 }
+
+export interface ProductionTimeCategory {
+  id: string;
+  name: string;
+  value: string | number;
+  type: 'fixed' | 'formula';
+  unit?: string;
+  description?: string;
+}
+
+export interface ErrorTimeCategory {
+  id: string;
+  name: string;
+  value: number;
+  unit: string;
+  description?: string;
+  frequency?: string;
+}
