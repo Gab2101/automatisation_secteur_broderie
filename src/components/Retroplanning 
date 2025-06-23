@@ -1,0 +1,15 @@
+import React, { useState, useEffect } from 'react';
+import { X, Timer, Calculator, AlertCircle, Save } from 'lucide-react';
+import { ProductionTimeCategory } from '../types';
+
+interface AddEditProductionTimeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (timeData: {
+    name: string;
+    value: string | number;
+    type: 'fixed' | 'formula';
+    unit?: string;
+    description?: string;
+  }) => void;
+  editingTime: ProductionTimeCategory | null;
