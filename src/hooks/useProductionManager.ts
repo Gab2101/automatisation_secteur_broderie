@@ -29,7 +29,7 @@ export const useProductionManager = () => {
       completedOrders,
       activeProductions,
       availableMachines,
-      efficiency: Math.round(avgEfficiency)
+      efficiency: Math.round(avgEfficiency) || 0
     });
   }, [machines, orders]);
 
@@ -57,6 +57,40 @@ export const useProductionManager = () => {
     };
 
     setOrders(prev => [...prev, newOrder]);
+  };
+
+  const addMachine = (machineData: {
+    name: string;
+    type: string;
+    location: string;
+    efficiency: number;
+    maintenanceDate: Date;
+    capabilities: ClothingType[];
+    descriptionTags?: DescriptionTag[];
+  }) => {
+    const newMachine: Machine = {
+      id: `machine-${Date.now()}`,
+      name: machineData.name,
+      type: machineData.type,
+      status: 'available',
+      capabilities: machineData.capabilities,
+      efficiency: machineData.efficiency,
+      maintenanceDate: machineData.maintenanceDate,
+      location: machineData.location,
+      descriptionTags: machineData.descriptionTags || []
+    };
+
+    setMachines(prev => [...prev, newMachine]);
+  };
+
+  const deleteMachine = (machineId: string) => {
+    // Check if machine is currently assigned to an order
+    const assignedOrder = orders.find(order => order.assignedMachine === machineId);
+    if (assignedOrder) {
+      throw new Error('Impossible de supprimer une machine assignée à une commande');
+    }
+
+    setMachines(prev => prev.filter(machine => machine.id !== machineId));
   };
 
   const addOperator = (operatorData: {
@@ -244,6 +278,8 @@ export const useProductionManager = () => {
     errorTimeCategories,
     stats,
     addOrder,
+    addMachine,
+    deleteMachine,
     addOperator,
     updateOperator,
     updateMachine,

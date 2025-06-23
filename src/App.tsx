@@ -8,6 +8,7 @@ import MachineSelectionModal from './components/MachineSelectionModal';
 import MachineConfigurationModal from './components/MachineConfigurationModal';
 import NewOrderModal from './components/NewOrderModal';
 import NewOperatorModal from './components/NewOperatorModal';
+import NewMachineModal from './components/NewMachineModal';
 import EditOperatorModal from './components/EditOperatorModal';
 import TimeManagementDashboard from './components/TimeManagementDashboard';
 import { useProductionManager } from './hooks/useProductionManager';
@@ -24,6 +25,8 @@ function App() {
     errorTimeCategories,
     stats,
     addOrder,
+    addMachine,
+    deleteMachine,
     addOperator,
     updateOperator,
     updateMachine,
@@ -46,6 +49,7 @@ function App() {
   const [showMachineConfigModal, setShowMachineConfigModal] = useState(false);
   const [showNewOrderModal, setShowNewOrderModal] = useState(false);
   const [showNewOperatorModal, setShowNewOperatorModal] = useState(false);
+  const [showNewMachineModal, setShowNewMachineModal] = useState(false);
   const [showEditOperatorModal, setShowEditOperatorModal] = useState(false);
   const [customTags, setCustomTags] = useState<DescriptionTag[]>([]);
 
@@ -107,6 +111,30 @@ function App() {
     strengths: DescriptionTag[];
   }) => {
     addOperator(operatorData);
+  };
+
+  const handleAddMachine = (machineData: {
+    name: string;
+    type: string;
+    location: string;
+    efficiency: number;
+    maintenanceDate: Date;
+    capabilities: any[];
+    descriptionTags?: DescriptionTag[];
+  }) => {
+    try {
+      addMachine(machineData);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erreur lors de l\'ajout de la machine');
+    }
+  };
+
+  const handleDeleteMachine = (machineId: string) => {
+    try {
+      deleteMachine(machineId);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erreur lors de la suppression de la machine');
+    }
   };
 
   const pendingOrders = orders.filter(order => order.status === 'pending');
@@ -241,18 +269,27 @@ function App() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">Machines de Production</h2>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>
-                  <span className="text-sm text-gray-600">Disponible</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 bg-amber-400 rounded-full"></span>
-                  <span className="text-sm text-gray-600">Occupée</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 bg-red-400 rounded-full"></span>
-                  <span className="text-sm text-gray-600">Maintenance</span>
+              <div className="flex items-center space-x-6">
+                <button 
+                  onClick={() => setShowNewMachineModal(true)}
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Ajouter une Machine</span>
+                </button>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>
+                    <span className="text-sm text-gray-600">Disponible</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-3 h-3 bg-amber-400 rounded-full"></span>
+                    <span className="text-sm text-gray-600">Occupée</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-3 h-3 bg-red-400 rounded-full"></span>
+                    <span className="text-sm text-gray-600">Maintenance</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -262,6 +299,7 @@ function App() {
                   key={machine.id} 
                   machine={machine} 
                   onClick={() => handleMachineConfiguration(machine)}
+                  onDelete={handleDeleteMachine}
                 />
               ))}
             </div>
@@ -381,6 +419,15 @@ function App() {
         isOpen={showNewOperatorModal}
         onClose={() => setShowNewOperatorModal(false)}
         onAddOperator={handleAddOperator}
+        allDescriptionTags={allDescriptionTags}
+      />
+
+      {/* New Machine Modal */}
+      <NewMachineModal
+        isOpen={showNewMachineModal}
+        onClose={() => setShowNewMachineModal(false)}
+        onAddMachine={handleAddMachine}
+        clothingTypes={clothingTypes}
         allDescriptionTags={allDescriptionTags}
       />
 

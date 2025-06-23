@@ -1,13 +1,14 @@
 import React from 'react';
 import { Machine } from '../types';
-import { Settings, MapPin, TrendingUp, Clock, Tag } from 'lucide-react';
+import { Settings, MapPin, TrendingUp, Clock, Tag, Trash2 } from 'lucide-react';
 
 interface MachineCardProps {
   machine: Machine;
   onClick?: () => void;
+  onDelete?: (machineId: string) => void;
 }
 
-const MachineCard: React.FC<MachineCardProps> = ({ machine, onClick }) => {
+const MachineCard: React.FC<MachineCardProps> = ({ machine, onClick, onDelete }) => {
   const getStatusColor = (status: Machine['status']) => {
     switch (status) {
       case 'available':
@@ -66,6 +67,17 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, onClick }) => {
     return colorMap[color || 'gray'] || 'bg-gray-100 text-gray-800';
   };
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (machine.status === 'busy') {
+      alert('Impossible de supprimer une machine en cours d\'utilisation');
+      return;
+    }
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer la machine "${machine.name}" ?`)) {
+      onDelete?.(machine.id);
+    }
+  };
+
   return (
     <div
       className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 cursor-pointer transform hover:-translate-y-1 ${
@@ -81,6 +93,15 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, onClick }) => {
         <div className="flex items-center space-x-2">
           <span className="text-lg">{getStatusIcon(machine.status)}</span>
           <Settings className="w-5 h-5 text-gray-400" />
+          {onDelete && (
+            <button
+              onClick={handleDeleteClick}
+              className="p-1 text-red-500 hover:bg-red-100 rounded transition-colors duration-200"
+              title="Supprimer la machine"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
