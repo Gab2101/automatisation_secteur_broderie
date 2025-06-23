@@ -1,15 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { X, Timer, Calculator, AlertCircle, Save } from 'lucide-react';
-import { ProductionTimeCategory } from '../types';
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+from datetime import datetime, timedelta
 
-interface AddEditProductionTimeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (timeData: {
-    name: string;
-    value: string | number;
-    type: 'fixed' | 'formula';
-    unit?: string;
-    description?: string;
-  }) => void;
-  editingTime: ProductionTimeCategory | null;
+st.set_page_config(layout="wide")
+st.title("🛠️ Planning des machines (zoomable)")
+
+# --- Paramètres
+machines = [f"Machine {i}" for i in range(1, 12)]
+nb_jours = st.slider("Nombre de jours à afficher :", 1, 14, 3)
+debut = st.date_input("Date de départ :", datetime.today())
+
+# --- Génération des tâches fictives
+tasks = []
+for i in range(nb_jours):
+    date = debut + timedelta(days=i)
+    for machine in machines:
+        heure_debut = datetime.combine(date, datetime.min.time()) + timedelta(hours=8 + (i % 4))  # tâche commence vers 8h-12h
+        duree = timedelta(hours=2)
+        tasks.append({
+            "Machine": machine,
+            "Début": heure_debut,
+            "Fin": heure_debut + duree,
+            "Tâche": f"Tâche {i+1}-{machine[-1]}"
+        })
+
+# --- Création DataFrame
+df = pd.DataFrame(tasks)
+
+# --- Gantt Chart avec Plotly
+fig = px.timeline(df, x_start="Début", x_end="Fin", y="Machine", color="Tâche", title="Planning journalier par machine")
+fig.update_yaxes(autorange="reversed")  # Machines 1 à 11 de haut en bas
+fig.update_xaxes(rangeslider_visible=True)  # slider zoom
+fig.update_layout(height=600, margin=dict(l=20, r=20, t=50, b=20))
+
+st.plotly_chart(fig, use_container_width=True)
