@@ -1,3 +1,7 @@
+/**
+ * Type definitions for the production management system
+ */
+
 export interface Machine {
   id: string;
   name: string;
@@ -21,7 +25,7 @@ export interface Order {
   dueDate: Date;
   status: 'pending' | 'in-production' | 'completed' | 'cancelled';
   assignedMachine?: string;
-  estimatedDuration: number;
+  estimatedDuration: number; // in minutes
   completedQuantity: number;
   descriptionTags?: DescriptionTag[];
 }
@@ -30,23 +34,23 @@ export interface ClothingType {
   id: string;
   name: string;
   category: 'shirt' | 'pants' | 'dress' | 'jacket' | 'accessories';
-  complexity: number;
+  complexity: number; // 1-10 scale
   estimatedTime: number; // in minutes per unit
   requiredMachines: string[];
 }
 
 export interface DescriptionTag {
   id: string;
-  code: string;
-  label: string;
-  color?: string;
+  code: string; // Short code (e.g., "GB" for Grande Broderie)
+  label: string; // Full description
+  color?: string; // Tailwind color name
 }
 
 export interface Operator {
   id: string;
   name: string;
-  language: string;
-  strengths: DescriptionTag[];
+  language: string; // Language code (e.g., "fr", "en")
+  strengths: DescriptionTag[]; // Areas of expertise
 }
 
 export interface ProductionStats {
@@ -54,23 +58,23 @@ export interface ProductionStats {
   completedOrders: number;
   activeProductions: number;
   availableMachines: number;
-  efficiency: number;
+  efficiency: number; // Average efficiency percentage
 }
 
 export interface ProductionTimeCategory {
   id: string;
   name: string;
-  value: string | number;
+  value: string | number; // Can be a fixed number or formula string
   type: 'fixed' | 'formula';
-  unit?: string;
+  unit?: string; // e.g., "minutes", "seconds", "%"
   description?: string;
 }
 
 export interface ErrorTimeCategory {
   id: string;
   name: string;
-  value: number;
-  unit: string;
+  value: number; // Time lost in specified unit
+  unit: string; // e.g., "minutes", "seconds"
   description?: string;
-  frequency?: string;
+  frequency?: string; // How often this error occurs
 }

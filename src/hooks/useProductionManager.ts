@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react';
 import { Machine, Order, ProductionStats, ClothingType, DescriptionTag, Operator, ProductionTimeCategory, ErrorTimeCategory } from '../types';
 import { machines as initialMachines, orders as initialOrders, productionTimeCategories as initialProductionTimes, errorTimeCategories as initialErrorTimes } from '../data/mockData';
 
+/**
+ * Custom hook for managing production data and operations
+ * Handles machines, orders, operators, and time management
+ */
 export const useProductionManager = () => {
+  // State Management
   const [machines, setMachines] = useState<Machine[]>(initialMachines);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [operators, setOperators] = useState<Operator[]>([]);
@@ -16,7 +21,9 @@ export const useProductionManager = () => {
     efficiency: 0
   });
 
-  // Calculate stats whenever machines or orders change
+  /**
+   * Calculate production statistics whenever machines or orders change
+   */
   useEffect(() => {
     const totalOrders = orders.length;
     const completedOrders = orders.filter(order => order.status === 'completed').length;
@@ -33,6 +40,7 @@ export const useProductionManager = () => {
     });
   }, [machines, orders]);
 
+  // Order Management
   const addOrder = (orderData: {
     orderNumber: string;
     customerName: string;
@@ -59,6 +67,7 @@ export const useProductionManager = () => {
     setOrders(prev => [...prev, newOrder]);
   };
 
+  // Machine Management
   const addMachine = (machineData: {
     name: string;
     type: string;
@@ -84,7 +93,7 @@ export const useProductionManager = () => {
   };
 
   const deleteMachine = (machineId: string) => {
-    // Check if machine is currently assigned to an order
+    // Safety check: prevent deletion of machines currently in use
     const assignedOrder = orders.find(order => order.assignedMachine === machineId);
     if (assignedOrder) {
       throw new Error('Impossible de supprimer une machine assignée à une commande');
@@ -93,6 +102,15 @@ export const useProductionManager = () => {
     setMachines(prev => prev.filter(machine => machine.id !== machineId));
   };
 
+  const updateMachine = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
+    setMachines(prev => prev.map(machine => 
+      machine.id === machineId 
+        ? { ...machine, name, descriptionTags }
+        : machine
+    ));
+  };
+
+  // Operator Management
   const addOperator = (operatorData: {
     name: string;
     language: string;
@@ -117,14 +135,6 @@ export const useProductionManager = () => {
       operator.id === operatorId 
         ? { ...operator, name: operatorData.name, language: operatorData.language, strengths: operatorData.strengths }
         : operator
-    ));
-  };
-
-  const updateMachine = (machineId: string, name: string, descriptionTags: DescriptionTag[]) => {
-    setMachines(prev => prev.map(machine => 
-      machine.id === machineId 
-        ? { ...machine, name, descriptionTags }
-        : machine
     ));
   };
 
@@ -204,13 +214,16 @@ export const useProductionManager = () => {
     setErrorTimeCategories(prev => prev.filter(error => error.id !== errorId));
   };
 
+  // Production Operations
   const assignMachineToOrder = (machineId: string, orderId: string) => {
+    // Update machine status to busy
     setMachines(prev => prev.map(machine => 
       machine.id === machineId 
         ? { ...machine, status: 'busy' as const, currentOrder: orderId }
         : machine
     ));
 
+    // Assign machine to order
     setOrders(prev => prev.map(order => 
       order.id === orderId 
         ? { ...order, assignedMachine: machineId }
@@ -225,12 +238,16 @@ export const useProductionManager = () => {
         : order
     ));
 
-    // Simulate production progress
+    // Start production simulation
     setTimeout(() => {
       simulateProductionProgress(orderId);
     }, 2000);
   };
 
+  /**
+   * Simulate production progress for demo purposes
+   * In a real application, this would be handled by actual production updates
+   */
   const simulateProductionProgress = (orderId: string) => {
     const progressInterval = setInterval(() => {
       setOrders(prev => {
@@ -240,7 +257,7 @@ export const useProductionManager = () => {
             const newCompleted = Math.min(order.completedQuantity + increment, order.quantity);
             
             if (newCompleted >= order.quantity) {
-              // Complete the order
+              // Complete the order and free the machine
               setMachines(prevMachines => prevMachines.map(machine => 
                 machine.currentOrder === orderId
                   ? { ...machine, status: 'available' as const, currentOrder: undefined }
@@ -261,36 +278,38 @@ export const useProductionManager = () => {
     }, 3000);
   };
 
-  const getAvailableMachinesForOrder = (order: Order): Machine[] => {
-    return machines.filter(machine => 
-      machine.status === 'available' &&
-      machine.capabilities.some(capability => 
-        order.clothingType.requiredMachines.includes(machine.type)
-      )
-    );
-  };
-
+  // Return all state and functions
   return {
+    // State
     machines,
     orders,
     operators,
     productionTimeCategories,
     errorTimeCategories,
     stats,
+    
+    // Order operations
     addOrder,
+    
+    // Machine operations
     addMachine,
     deleteMachine,
+    updateMachine,
+    
+    // Operator operations
     addOperator,
     updateOperator,
-    updateMachine,
+    
+    // Time management operations
     addProductionTime,
     updateProductionTime,
     deleteProductionTime,
     addErrorTime,
     updateErrorTime,
     deleteErrorTime,
+    
+    // Production operations
     assignMachineToOrder,
-    startProduction,
-    getAvailableMachinesForOrder
+    startProduction
   };
 };

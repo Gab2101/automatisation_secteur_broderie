@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import { Factory, Package, BarChart3, Settings, Plus, Users, Clock } from 'lucide-react';
+
+// Components
 import MachineCard from './components/MachineCard';
 import OrderCard from './components/OrderCard';
 import StatsCard from './components/StatsCard';
 import OperatorCard from './components/OperatorCard';
+import TimeManagementDashboard from './components/TimeManagementDashboard';
+
+// Modals
 import MachineSelectionModal from './components/MachineSelectionModal';
 import MachineConfigurationModal from './components/MachineConfigurationModal';
 import NewOrderModal from './components/NewOrderModal';
 import NewOperatorModal from './components/NewOperatorModal';
 import NewMachineModal from './components/NewMachineModal';
 import EditOperatorModal from './components/EditOperatorModal';
-import TimeManagementDashboard from './components/TimeManagementDashboard';
+
+// Hooks and data
 import { useProductionManager } from './hooks/useProductionManager';
 import { Order, Machine, Operator, DescriptionTag } from './types';
-import { clothingTypes } from './data/mockData';
-import { descriptionTags as initialDescriptionTags } from './data/mockData';
+import { clothingTypes, descriptionTags as initialDescriptionTags } from './data/mockData';
 
 function App() {
+  // Production manager hook - handles all business logic
   const {
     machines,
     orders,
@@ -37,11 +43,13 @@ function App() {
     updateErrorTime,
     deleteErrorTime,
     assignMachineToOrder,
-    startProduction,
-    getAvailableMachinesForOrder
+    startProduction
   } = useProductionManager();
 
+  // UI State Management
   const [activeTab, setActiveTab] = useState<'dashboard' | 'machines' | 'orders' | 'operators' | 'time-management'>('dashboard');
+  
+  // Modal states
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
@@ -51,10 +59,12 @@ function App() {
   const [showNewOperatorModal, setShowNewOperatorModal] = useState(false);
   const [showNewMachineModal, setShowNewMachineModal] = useState(false);
   const [showEditOperatorModal, setShowEditOperatorModal] = useState(false);
+  
+  // Custom tags for descriptions
   const [customTags, setCustomTags] = useState<DescriptionTag[]>([]);
-
   const allDescriptionTags = [...initialDescriptionTags, ...customTags];
 
+  // Event Handlers
   const handleAssignMachine = (orderId: string) => {
     const order = orders.find(o => o.id === orderId);
     if (order) {
@@ -137,9 +147,9 @@ function App() {
     }
   };
 
+  // Data filtering for dashboard
   const pendingOrders = orders.filter(order => order.status === 'pending');
   const activeOrders = orders.filter(order => order.status === 'in-production');
-  const completedOrders = orders.filter(order => order.status === 'completed');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -165,7 +175,7 @@ function App() {
         </div>
       </header>
 
-      {/* Navigation */}
+      {/* Navigation Tabs */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
@@ -195,9 +205,10 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            {/* Stats Cards */}
+            {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatsCard
                 title="Total Commandes"
@@ -227,8 +238,9 @@ function App() {
               />
             </div>
 
-            {/* Recent Activities */}
+            {/* Active and Pending Orders */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Active Productions */}
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Productions Actives</h2>
                 <div className="space-y-4">
@@ -243,6 +255,7 @@ function App() {
                 </div>
               </div>
 
+              {/* Pending Orders */}
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Commandes en Attente</h2>
                 <div className="space-y-4">
@@ -265,6 +278,7 @@ function App() {
           </div>
         )}
 
+        {/* Machines Tab */}
         {activeTab === 'machines' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -277,6 +291,7 @@ function App() {
                   <Plus className="w-4 h-4" />
                   <span>Ajouter une Machine</span>
                 </button>
+                {/* Status Legend */}
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>
@@ -306,11 +321,11 @@ function App() {
           </div>
         )}
 
+        {/* Orders Tab */}
         {activeTab === 'orders' && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">Commandes de Production</h2>
             
-            {/* Order Status Tabs */}
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8">
                 <div className="text-blue-600 border-blue-500 py-2 px-1 border-b-2 font-medium text-sm">
@@ -332,6 +347,7 @@ function App() {
           </div>
         )}
 
+        {/* Operators Tab */}
         {activeTab === 'operators' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -374,6 +390,7 @@ function App() {
           </div>
         )}
 
+        {/* Time Management Tab */}
         {activeTab === 'time-management' && (
           <TimeManagementDashboard
             productionTimeCategories={productionTimeCategories}
@@ -388,7 +405,7 @@ function App() {
         )}
       </main>
 
-      {/* Machine Selection Modal */}
+      {/* Modals */}
       <MachineSelectionModal
         isOpen={showMachineModal}
         onClose={() => setShowMachineModal(false)}
@@ -397,7 +414,6 @@ function App() {
         onSelectMachine={handleMachineSelection}
       />
 
-      {/* Machine Configuration Modal */}
       <MachineConfigurationModal
         isOpen={showMachineConfigModal}
         onClose={() => setShowMachineConfigModal(false)}
@@ -406,7 +422,6 @@ function App() {
         onSave={handleMachineUpdate}
       />
 
-      {/* New Order Modal */}
       <NewOrderModal
         isOpen={showNewOrderModal}
         onClose={() => setShowNewOrderModal(false)}
@@ -414,7 +429,6 @@ function App() {
         clothingTypes={clothingTypes}
       />
 
-      {/* New Operator Modal */}
       <NewOperatorModal
         isOpen={showNewOperatorModal}
         onClose={() => setShowNewOperatorModal(false)}
@@ -422,7 +436,6 @@ function App() {
         allDescriptionTags={allDescriptionTags}
       />
 
-      {/* New Machine Modal */}
       <NewMachineModal
         isOpen={showNewMachineModal}
         onClose={() => setShowNewMachineModal(false)}
@@ -431,7 +444,6 @@ function App() {
         allDescriptionTags={allDescriptionTags}
       />
 
-      {/* Edit Operator Modal */}
       <EditOperatorModal
         isOpen={showEditOperatorModal}
         onClose={() => setShowEditOperatorModal(false)}
